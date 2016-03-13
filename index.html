@@ -13,8 +13,7 @@
     <script src="lib/react.js"></script>
     <script src="lib/react-dom.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.js"></script>
-
-    <script type="text/babel">
+<script type="text/babel">
       var notes = [
         { id: 1, content: 'Learn React' },
         { id: 2, content: 'Get lunch' },
@@ -23,50 +22,70 @@
 
       var NotesList = React.createClass({
         renderNote: function (note) {
-          return <li key={ note.id }>{ note.content }</li>
+          return (
+            <li key={ note.id }>
+              { note.content }
+              <button onClick={ () => this.props.onDestroy(note.id) }>
+                Remove
+              </button>
+            </li>
+          )
         },
         render: function () {
           return <ul>{ this.props.notes.map(this.renderNote) }</ul>
         }
       })
 
-      var NotesForm = React.createClass({
-      	render() {
-      	  return (
-      	    <form ref="form" onSubmit>
-      	      <input ref= "text" type="text"/>
-      	      <input type="submit" value="Add Note"/>
-      	    </form>
-      	  )
-      	},
-      	handleSubmission: function(event) {
-      		event.preventDefault()
-      		this.props.onSubmit(this.ref.text.value)
-      		thisrefs.form.reset()
-      	}
-      })
+        var NotesForm = React.createClass({
+          render: function () {
+            return (
+              <form ref="form" onSubmit={ this.handleSubmission }>
+                <input ref="text" type="text" />
+                <input type="submit" value="Add Note" />
+              </form>
+            )
+          },
+          handleSubmission: function (event) {
+            event.preventDefault()
+              this.props.onSubmit(this.refs.text.value)
+              this.refs.form.reset()
+          }
+        })
 
-      var App = React.createClass({
-        render() {
-          var notes = this.props.notes
+        var App = React.createClass({
 
-          return (
-            <section>
-              <h1>You have { notes.length }</h1>
-              <NotesList notes = { notes } />
-              <NotesForm onSubmit = {this.appendNote} />
-            </section>
-          )
-        }, 
-        appendNote(content) {
-			alert(content)
-        }
-      })
+          getInitialState() {
+            return { notes: [] }
+          },
 
+          render() {
+            var notes = this.state.notes
 
+            return (
+              <section>
+                <h1>You have { notes.length } Notes</h1>
+                <NotesList notes={ notes } onDestroy={ this.removeNote }/>
+                <NotesForm onSubmit={ this.appendNote }/>
+              </section>
+            )
+          },
+          removeNote(id) {
+            this.setState({
+              notes: this.state.notes.filter(note => note.id !== id)
+            })
+          },
+          appendNote(content) {
+            this.setState({
+              notes: this.state.notes.concat({
+                id: this.state.notes.length,
+                content: content
+              })
+            })
+          }
+        })
 
-      ReactDOM.render(<App notes={ notes } />,
-                      document.getElementById('entry-point'));
+        ReactDOM.render(<App notes={ notes } />,
+                        document.getElementById('entry-point'));
     </script>
 </body>
 
