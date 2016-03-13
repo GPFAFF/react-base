@@ -12,39 +12,61 @@
     <div id="heading"></div>
     <script src="lib/react.js"></script>
     <script src="lib/react-dom.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.js"></script>
-	<script type="text/javascript">
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.js"></script>
+
+    <script type="text/babel">
       var notes = [
         { id: 1, content: 'Learn React' },
         { id: 2, content: 'Get lunch' },
-        { id: 3, content: 'Learn React Native' }
+        { id: 3, content: 'Learn React Native' },
       ];
 
       var NotesList = React.createClass({
         renderNote: function (note) {
-          return React.createElement('li', { key: note.id }, note.content);
+          return <li key={ note.id }>{ note.content }</li>
         },
         render: function () {
-          return React.createElement('ul', null,
-                                     this.props.notes.map(this.renderNote))
+          return <ul>{ this.props.notes.map(this.renderNote) }</ul>
         }
+      })
+
+      var NotesForm = React.createClass({
+      	render() {
+      	  return (
+      	    <form ref="form" onSubmit>
+      	      <input ref= "text" type="text"/>
+      	      <input type="submit" value="Add Note"/>
+      	    </form>
+      	  )
+      	},
+      	handleSubmission: function(event) {
+      		event.preventDefault()
+      		this.props.onSubmit(this.ref.text.value)
+      		thisrefs.form.reset()
+      	}
       })
 
       var App = React.createClass({
         render() {
           var notes = this.props.notes
 
-          return React.createElement('section', null,
-            React.createElement('h1', null, 'You have ', notes.length, ' notes'),
-            React.createElement(NotesList, { notes: notes })
+          return (
+            <section>
+              <h1>You have { notes.length }</h1>
+              <NotesList notes = { notes } />
+              <NotesForm onSubmit = {this.appendNote} />
+            </section>
           )
+        }, 
+        appendNote(content) {
+			alert(content)
         }
       })
 
-      ReactDOM.render(React.createElement(App, { notes: notes }),
-                      document.getElementById('entry-point'));
-    </script>
 
+
+      ReactDOM.render(<App notes={ notes } />,
+                      document.getElementById('entry-point'));
     </script>
 </body>
 
